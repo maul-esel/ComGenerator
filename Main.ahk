@@ -26,16 +26,14 @@ SetBatchLines -1
 SetWorkingDir %A_ScriptDir%
 
 /*
-#Includes (executed at loadtime)
+check app mode
 */
-#include ERROR.ahk
-
-if 0 > 0 ; if command line parameters were passed:
+if 0 > 0 ; CMD mode
 {
 	IsUIMode(false)
 	Cmd_Run(Cmd_Arguments())
 }
-else
+else ; UI mode
 {
 	IsUIMode(true)
 	Gosub BuildGui
@@ -158,3 +156,4 @@ LoadTypeInfo(lib, iid)
 
 #include Gui.ahk
 #include Cmd.ahk
+#include ERROR.ahk
