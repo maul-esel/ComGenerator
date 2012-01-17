@@ -1,5 +1,7 @@
 class ERROR
 {
+	static CLEAR := -1
+
 	static SUCCESS := 0x00
 
 	static ABORTED := 0x01
@@ -18,7 +20,10 @@ class ERROR
 
 	static LOAD_TYPE := 0x08
 
-	static Messages := { (ERROR.SUCCESS) : "Success!"
+	static NAME_MISSING := 0x09
+
+	static Messages := { (ERROR.CLEAR) : ""
+						, (ERROR.SUCCESS) : "Success!"
 						, (ERROR.ABORTED) : "Operation aborted by user."
 						, (ERROR.INVALID_CMD) : "Invalid command line options."
 						, (ERROR.FIND_INTERFACE) : "The IID for the specified interface name could not be found."
@@ -26,5 +31,6 @@ class ERROR
 						, (ERROR.READ_TYPELIB) : "The type library for the specified IID could not be read."
 						, (ERROR.READ_TYPELIB_VERSION) : "The type library version for the specified IID could not be read."
 						, (ERROR.LOAD_LIBRARY) : "The type library could not be loaded."
-						, (ERROR.LOAD_TYPE) : "The specified type could not be loaded from the type library." }
+						, (ERROR.LOAD_TYPE) : "The specified type could not be loaded from the type library."
+						, (ERROR.NAME_MISSING) : "No name was specified." }
 }
