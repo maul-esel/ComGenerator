@@ -60,7 +60,7 @@ Parameters:
 	[opt] BOOL exit - if the app is in CMD mode, defines whether the app should be shut down.
 	[opt] STR msg - an additional message to display.
 */
-Error(code = 0x00, exit = false, msg = "")
+Error(code = -1, exit = false, msg = "")
 {
 	return IsUIMode() ? Gui_Error(code, msg) : Cmd_Error(code, exit, msg)
 }
