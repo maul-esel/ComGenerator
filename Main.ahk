@@ -114,7 +114,7 @@ SearchIID4Name(name)
 {
 	Status("Searching IID for interface """ . name . """.")
 	iid := Registry_SearchIID4Name(name)
-	if (!version)
+	if (!iid)
 	{
 		return 0, Status(), Error(ERROR.FIND_INTERFACE, true, "Interface: " . name)
 	}
