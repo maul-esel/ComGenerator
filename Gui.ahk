@@ -111,7 +111,8 @@ Gui main: Submit, NoHide
 lib := LoadTypeLibrary(TypeLibGUID, TypeLibMajorVer, TypeLibMinorVer)
 
 GuiControl main:, TypeLibPtr, % lib.ptr
-GuiControl main: % "Enable" . IsObject(lib), SearchTypeButton
+if IsObject(lib)
+	GuiControl main: Enable, SearchTypeButton
 return
 
 /*
@@ -122,7 +123,8 @@ Gui main: Submit, NoHide
 type := LoadTypeInfo(lib, InterfaceID)
 
 GuiControl main:, TypeInfoPtr, % type.ptr
-GuiControl main: % "Enable" . IsObject(type), GenerateButton
+if IsObject(type)
+	GuiControl main: Enable, GenerateButton
 return
 
 /*
