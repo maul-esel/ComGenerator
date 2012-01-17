@@ -40,7 +40,7 @@ Gui main: Add, Button, x10 yp+30 w125 disabled vLoadLibButton gGui_LoadTypeLibra
 
 Gui main: Add, Text, x10 yp+40, ITypeLib pointer:
 Gui main: Add, Edit, vTypeLibPtr Readonly x150 yp w300
-Gui main: Add, Button, x10 yp+30 w125 disabled vSearchTypeButton gGui_LoadTypeInfo, Search for type
+Gui main: Add, Button, x10 yp+30 w125 disabled vLoadTypeButton gGui_LoadTypeInfo, Search for type
 
 Gui main: Add, Text, x10 yp+40, ITypeInfo pointer:
 Gui main: Add, Edit, vTypeInfoPtr Readonly x150 yp w300
