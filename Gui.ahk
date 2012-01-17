@@ -96,7 +96,7 @@ Gui_SearchIID4Name:
 Gui main: Submit, NoHide
 if (!InterfaceName)
 {
-	Error("No name specified."), Status()
+	Error(ERROR.NAME_MISSING, true), Status()
 	return
 }
 iid := SearchIID4Name(InterfaceName)
