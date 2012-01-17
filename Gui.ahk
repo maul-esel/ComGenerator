@@ -163,7 +163,7 @@ If the app is in GUI mode, reports an error to the user
 Parameters:
 	STR text - the text to report
 */
-Gui_Error(code = 0x00, msg = "")
+Gui_Error(code, msg)
 {
 	Gui main: Default
 	SB_SetText("`t`t" . ERROR.Messages[code] . ": " . msg, 2)
