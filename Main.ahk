@@ -24,7 +24,6 @@ script header
 ListLines Off
 SetBatchLines -1
 SetWorkingDir %A_ScriptDir%
-OnExit Cleanup
 
 /*
 #Includes
@@ -73,10 +72,6 @@ Gui main: Show, w630
 return
 
 mainGuiClose:
-ExitApp
-return
-
-Cleanup:
 ExitApp
 return
 
