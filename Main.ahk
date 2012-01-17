@@ -62,7 +62,7 @@ Parameters:
 */
 Error(code = 0x00, exit = false, msg = "")
 {
-	return IsUIMode() ? Gui_Error(ERROR.Messages[code] . "`n" . msg) : Cmd_Error(ERROR.Messages[code] . "`n" . msg, exit)
+	return IsUIMode() ? Gui_Error(code, msg) : Cmd_Error(code, exit, msg)
 }
 
 /*

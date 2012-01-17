@@ -20,16 +20,17 @@ Parameters:
 	STR text - the text to report
 	BOOL exit - true if the app should be shutdown
 */
-Cmd_Error(text, exit)
+Cmd_Error(code = 0x00, exit = false, msg = "")
 {
 	static err := FileOpen(DllCall("GetStdHandle", "UInt", -12, "UPtr"), "h")
 	if (text)
 	{
-		err.Write(text)
+		err.WriteLine(ERROR.Messages[code])
+		msg ? err.WriteLine(msg) : ""
 		err.Read(0)
 	}
 	if (exit)
-		ExitApp
+		ExitApp code
 }
 
 /*
