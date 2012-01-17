@@ -59,8 +59,6 @@ return
 Label: Gui_LoadLibraryInformation
 */
 Gui_LoadLibraryInformation:
-Status("Loading information...")
-
 Gui main: Submit, NoHide
 
 GuiControl main:, InterfaceName, % name := GetName4IID(InterfaceID)
@@ -81,10 +79,6 @@ if (name && libid && version)
 	GuiControl main: Enable, LoadLibButton
 
 	Error()
-}
-else
-{
-	Error("Not enough information available!")
 }
 Status()
 return
@@ -111,8 +105,9 @@ Gui main: Submit, NoHide
 lib := LoadTypeLibrary(TypeLibGUID, TypeLibMajorVer, TypeLibMinorVer)
 
 GuiControl main:, TypeLibPtr, % lib.ptr
-if IsObject(lib)
-	GuiControl main: Enable, SearchTypeButton
+success := IsObject(lib)
+GuiControl main: Enable%success%, LoadTypeButton
+GuiControl main: Disable%success%, LoadLibButton
 return
 
 /*
@@ -123,8 +118,9 @@ Gui main: Submit, NoHide
 type := LoadTypeInfo(lib, InterfaceID)
 
 GuiControl main:, TypeInfoPtr, % type.ptr
-if IsObject(type)
-	GuiControl main: Enable, GenerateButton
+success := IsObject(type)
+GuiControl main: Enable%success%, GenerateButton
+GuiControl main: Disable%success%, LoadTypeButton
 return
 
 /*
