@@ -26,164 +26,128 @@ SetBatchLines -1
 SetWorkingDir %A_ScriptDir%
 
 /*
-#Includes
+#Includes (executed at loadtime)
+*/
+#include ErrorCodes.ahk
+
+if 0 > 0 ; if command line parameters were passed:
+{
+	IsUIMode(false)
+	ExitApp % Cmd_Run(Cmd_Arguments())
+}
+else
+{
+	IsUIMode(true)
+	Gosub BuildGui
+}
+return
+
+/*
+Function: Status
+Reports the current status to the user
+*/
+Status(text = "Ready.")
+{
+	return IsUIMode() ? Gui_Status(text) : Cmd_Status(text)
+}
+
+/*
+Function: Error
+Reports an error to the user.
+
+Parameters:
+	STR text - the error to report
+	BOOL exit - if the app is in CMD mode, defines whether the app should be shut down
+*/
+Error(text = "", exit = false)
+{
+	return IsUIMode() ? Gui_Error(text) : Cmd_Error(text, exit)
+}
+
+/*
+Function: IsUIMode
+retrieves whether the app is in UI mode or not. The value defaults to "false". If a value of "true" is passed, the value is changed.
+*/
+IsUIMode(val = true)
+{
+	static is_ui := false
+	if val
+		is_ui := true
+	return val
+}
+
+GetName4IID(iid)
+{
+	Status("Reading interface name for interface """ . iid . """.")
+	name := Registry_GetName4IID(iid)
+	if (!name)
+		Error("Could not read name for interface """ . iid . """.", false)
+	return name, Status(), Error()
+}
+
+GetTypeLib4IID(iid)
+{
+	Status("Reading type library guid for interface """ . iid . """.")
+	guid := Registry_GetTypeLib4IID(iid)
+	if (!guid)
+		Error("Could not read type library guid for interface """ . iid . """.", true)
+	return guid, Status(), Error()
+}
+
+GetTypeLibVersion4IID(iid)
+{
+	Status("Reading type library version for """ . iid . """.")
+	version := Registry_GetTypeLibVersion4IID(iid)
+	if (!version)
+		Error("Could not read type library version for interface """ . iid . """.", true)
+	return version, Status(), Error()
+}
+
+SearchIID4Name(name)
+{
+	Status("Searching IID for interface """ . name . """.")
+	iid := Registry_SearchIID4Name(name)
+	if (!version)
+		Error("Could not find IID for interface """ . name . """.", true)
+	return iid, Status(), Error()
+}
+
+LoadTypeLibrary(guid, vMajor, vMinor)
+{
+	Status("Loading type library """ . guid . """...")
+	try
+	{
+		lib := TypeLib.FromRegistry(guid, vMajor, vMinor)
+	}
+	catch exception
+	{
+		return false, Status(), Error("Could not load type library """ . guid . """.")
+	}
+	return lib, Status(), Error()
+}
+
+LoadTypeInfo(lib, iid)
+{
+	Status("Loading type info for """ . iid . """...")
+	try
+	{
+		type := lib.GetTypeInfoOfGuid(iid)
+	}
+	catch exception
+	{
+		return false, Status(), Error("Could not load type """ . iid . """ from type library.")
+	}
+	return type, Status(), Error()
+}
+
+
+
+/*
+#Includes (not executed at loadtime)
 */
 #include CCF\Unknown\Unknown.ahk
 #include CCF\TypeInfo\TypeInfo.ahk
 #include CCF\TypeLib\TypeLib.ahk
 
-#include ErrorCodes.ahk
-
-/*
-Gui
-*/
-Gui main: Add, Groupbox, x5 y0 w620 h95 cGray
-
-Gui main: Add, Text, x10 y10 w300, Interface ID (IID):
-Gui main: Add, Edit, vInterfaceID xp yp+25 w300
-Gui main: Add, Button, xp yp+30 w300 vLoadInfoButton gLoadLibraryInformation, Load
-
-Gui main: Add, Text, x320 y10 w300, Interface name:
-Gui main: Add, Edit, vInterfaceName xp yp+25 w300
-Gui main: Add, Button, xp yp+30 w300 vSearchIIDButton gSearchIID4Name, Search
-
-Gui main: Add, Text, x10 yp+40, Type Library GUID:
-Gui main: Add, Edit, vTypeLibGUID Readonly x150 yp w300
-Gui main: Add, Text, x10 yp+30, Type Library Version:
-Gui main: Add, Edit, vTypeLibMajorVer Readonly x150 yp w145
-Gui main: Add, Edit, vTypeLibMinorVer Readonly x305 yp w145
-Gui main: Add, Button, x10 yp+30 w125 disabled vLoadLibButton gLoadTypeLibrary, Load library
-
-Gui main: Add, Text, x10 yp+40, ITypeLib pointer:
-Gui main: Add, Edit, vTypeLibPtr Readonly x150 yp w300
-Gui main: Add, Button, x10 yp+30 w125 disabled vSearchTypeButton gLoadTypeInfo, Search for type
-
-Gui main: Add, Text, x10 yp+40, ITypeInfo pointer:
-Gui main: Add, Edit, vTypeInfoPtr Readonly x150 yp w300
-Gui main: Add, Button, x10 yp+30 w125 disabled vGenerateButton gGenerateClass, Generate class
-
-Gui main: Add, Statusbar
-
-Gui main: Default
-SB_SetParts(315)
-SetStatus(), SetError()
-
-Gui main: Show, w630
-return
-
-mainGuiClose:
-ExitApp
-return
-
-LoadLibraryInformation:
-SetStatus("Loading information...")
-
-Gui main: Submit, NoHide
-
-GuiControl main:, InterfaceName, % name := Registry_GetName4IID(InterfaceID)
-GuiControl main:, TypeLibGUID, % libid := Registry_GetTypeLib4IID(InterfaceID)
-
-version := Registry_GetTypeLibVersion4IID(InterfaceID)
-StringSplit, version, version,.
-GuiControl main:, TypeLibMajorVer, %version1%
-GuiControl main:, TypeLibMinorVer, %version2%
-
-if (name && libid && version)
-{
-	GuiControl main: +Readonly, InterfaceID
-	GuiControl main: +Readonly, InterfaceName
-
-	GuiControl main: Disable, LoadInfoButton
-	GuiControl main: Disable, SearchIIDButton
-	GuiControl main: Enable, LoadLibButton
-
-	SetError()
-}
-else
-{
-	SetError("Not enough information available!")
-}
-SetStatus()
-return
-
-
-SearchIID4Name:
-SetStatus("Searching type...")
-
-Gui main: Submit, NoHide
-
-if (!InterfaceName)
-{
-	SetError("No name specified."), SetStatus()
-	return
-}
-
-iid := Registry_SearchIID4Name(InterfaceName)
-GuiControl main:, InterfaceID, % iid ? iid : ""
-
-if (iid)
-{
-	SetError()
-}
-else
-{
-	SetError("Could not find interface """ . InterfaceName . """.")
-}
-SetStatus()
-return
-
-LoadTypeLibrary:
-SetStatus("Loading type library...")
-
-Gui Submit, NoHide
-
-try
-{
-	lib := TypeLib.FromRegistry(TypeLibGUID, TypeLibMajorVer, TypeLibMinorVer)
-}
-catch exception
-{
-	SetError("Could not load type library """ . TypeLibGUID . """."), SetStatus()
-	return
-}
-GuiControl main:, TypeLibPtr, % lib.ptr
-GuiControl main: Enable, SearchTypeButton
-
-SetError(), SetStatus()
-return
-
-LoadTypeInfo:
-SetStatus("Loading type info...")
-
-Gui Submit, NoHide
-
-try
-{
-	type := lib.GetTypeInfoOfGuid(InterfaceID)
-}
-catch exception
-{
-	SetError("Could not load type """ . InterfaceName . """ from type library """ . TypeLibGUID . """."), SetStatus()
-	return
-}
-GuiControl main:, TypeInfoPtr, % type.ptr
-GuiControl main: Enable, GenerateButton
-
-SetError(), SetStatus()
-return
-
-GenerateClass:
-throw Exception("Not implemented!", -1)
-return
-
-SetStatus(text = "Ready.")
-{
-	Gui main: Default
-	SB_SetText(text, 1)
-}
-
-SetError(text = "")
-{
-	Gui main: Default
-	SB_SetText("`t`t" . text, 2)
-}
+#include Gui.ahk
+#include Cmd.ahk
