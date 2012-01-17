@@ -33,7 +33,7 @@ SetWorkingDir %A_ScriptDir%
 if 0 > 0 ; if command line parameters were passed:
 {
 	IsUIMode(false)
-	ExitApp % Cmd_Run(Cmd_Arguments())
+	Cmd_Run(Cmd_Arguments())
 }
 else
 {
