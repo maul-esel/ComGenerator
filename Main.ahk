@@ -85,7 +85,7 @@ GuiControl main:, TypeLibMinorVer, %version2%
 if (name && libid && version)
 {
 	GuiControl main: Disable, LoadInfoButton
-	GuiControl main: Disable, InterfaceID
+	GuiControl main: +Readonly, InterfaceID
 	GuiControl main: Enable, LoadLibButton
 	GuiControl main: Hide, InfoMissingWarning
 }
