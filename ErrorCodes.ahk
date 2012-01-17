@@ -1,4 +1,0 @@
-global ERROR_NOT_ENOUGH_INFO := 0x01
-global ERROR_LOAD_LIBRARY := 0x02
-global ERROR_LOAD_TYPE := 0x03
-
