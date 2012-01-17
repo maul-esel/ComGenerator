@@ -28,7 +28,7 @@ SetWorkingDir %A_ScriptDir%
 /*
 #Includes (executed at loadtime)
 */
-#include ErrorCodes.ahk
+#include ERROR.ahk
 
 if 0 > 0 ; if command line parameters were passed:
 {
@@ -56,12 +56,13 @@ Function: Error
 Reports an error to the user.
 
 Parameters:
-	STR text - the error to report
-	BOOL exit - if the app is in CMD mode, defines whether the app should be shut down
+	[opt] UINT code - the error to report. Take the value from the ERROR class.
+	[opt] BOOL exit - if the app is in CMD mode, defines whether the app should be shut down.
+	[opt] STR msg - an additional message to display.
 */
-Error(text = "", exit = false)
+Error(code = 0x00, exit = false, msg = "")
 {
-	return IsUIMode() ? Gui_Error(text) : Cmd_Error(text, exit)
+	return IsUIMode() ? Gui_Error(ERROR.Messages[code] . "`n" . msg) : Cmd_Error(ERROR.Messages[code] . "`n" . msg, exit)
 }
 
 /*
@@ -81,7 +82,9 @@ GetName4IID(iid)
 	Status("Reading interface name for interface """ . iid . """.")
 	name := Registry_GetName4IID(iid)
 	if (!name)
-		Error("Could not read name for interface """ . iid . """.", false)
+	{
+		return "", Status(), Error(ERROR.READ_NAME, false, "IID: " . iid)
+	}
 	return name, Status(), Error()
 }
 
@@ -90,7 +93,9 @@ GetTypeLib4IID(iid)
 	Status("Reading type library guid for interface """ . iid . """.")
 	guid := Registry_GetTypeLib4IID(iid)
 	if (!guid)
-		Error("Could not read type library guid for interface """ . iid . """.", true)
+	{
+		return 0, Status(), Error(ERROR.READ_TYPELIB, true, "IID: " . iid)
+	}
 	return guid, Status(), Error()
 }
 
@@ -99,7 +104,9 @@ GetTypeLibVersion4IID(iid)
 	Status("Reading type library version for """ . iid . """.")
 	version := Registry_GetTypeLibVersion4IID(iid)
 	if (!version)
-		Error("Could not read type library version for interface """ . iid . """.", true)
+	{
+		return "", Status(), Error(ERROR.READ_TYPELIB_VERSION, true, "IID: " . iid)
+	}
 	return version, Status(), Error()
 }
 
@@ -108,7 +115,9 @@ SearchIID4Name(name)
 	Status("Searching IID for interface """ . name . """.")
 	iid := Registry_SearchIID4Name(name)
 	if (!version)
-		Error("Could not find IID for interface """ . name . """.", true)
+	{
+		return 0, Status(), Error(ERROR.FIND_INTERFACE, true, "Interface: " . name)
+	}
 	return iid, Status(), Error()
 }
 
@@ -121,7 +130,7 @@ LoadTypeLibrary(guid, vMajor, vMinor)
 	}
 	catch exception
 	{
-		return false, Status(), Error("Could not load type library """ . guid . """.")
+		return false, Status(), Error(ERROR.LOAD_LIBRARY, true, "Type library: " . guid)
 	}
 	return lib, Status(), Error()
 }
@@ -135,12 +144,10 @@ LoadTypeInfo(lib, iid)
 	}
 	catch exception
 	{
-		return false, Status(), Error("Could not load type """ . iid . """ from type library.")
+		return false, Status(), Error(ERROR.LOAD_TYPE, true, "IID: " . iid)
 	}
 	return type, Status(), Error()
 }
-
-
 
 /*
 #Includes (not executed at loadtime)
