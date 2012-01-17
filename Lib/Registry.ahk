@@ -61,3 +61,24 @@ Registry_GetMethodCount4IID(iid)
 	RegRead count, HKCR, Interface\%iid%\NumMethod
 	return count
 }
+
+/*
+Function: Registry_SearchIID4Name
+searches the registry for the IID of the given interface name
+
+Parameters:
+	STR name - the name of the interface
+
+Returns:
+	STR iid - the IID of the interface, if found. 0 if not found.
+*/
+Registry_SearchIID4Name(name)
+{
+	Loop HKCR, Interface, 2
+	{
+		RegRead current_name, HKCR, Interface\%A_LoopRegName%
+		if (current_name == name)
+			return A_LoopRegName
+	}
+	return 0
+}
