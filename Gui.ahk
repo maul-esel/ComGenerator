@@ -49,7 +49,7 @@ Gui main: Add, Button, x10 yp+30 w125 disabled vGenerateButton gGui_GenerateClas
 Gui main: Add, Statusbar
 
 Gui main: Default
-SB_SetParts(315)
+SB_SetParts(210, 210)
 Status(), Error()
 
 Gui main: Show, w630
@@ -166,5 +166,5 @@ Parameters:
 Gui_Error(code, msg)
 {
 	Gui main: Default
-	SB_SetText("`t`t" . ERROR.Messages[code] . ": " . msg, 2)
+	SB_SetText("`t`t" . ERROR.Messages[code]), SB_SetText("`t`t" . msg, 2)
 }
