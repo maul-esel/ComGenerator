@@ -77,6 +77,14 @@ Cmd_Run(args)
 			iid := iid2
 	}
 
+	clsid_index := Cmd_IndexOf(args, "--clsid")
+	if (clsid_index)
+	{
+		clsid := args[clsid_index + 1]
+		if (!clsid)
+			return Error(ERROR.INVALID_CMD, true), Status()
+	}
+
 	if (!iid)
 	{
 		return Error(ERROR.INVALID_CMD, true), Status()
