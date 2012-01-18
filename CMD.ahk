@@ -9,8 +9,8 @@ Cmd_Status(text)
 {
 	static out
 	if !IsObject(out)
-		out := FileOpen(DllCall("GetStdHandle", "UInt", -11, "UPtr"), "h")
-	out.Write(text . "`r")
+		out := FileOpen(DllCall("GetStdHandle", "UInt", -11, "UPtr"), "h `n")
+	out.WriteLine(text)
 	out.Read(0)
 }
 
@@ -22,17 +22,14 @@ Parameters:
 	STR text - the text to report
 	BOOL exit - true if the app should be shutdown
 */
-Cmd_Error(code = 0x00, exit = false, msg = "")
+Cmd_Error(code, exit, msg)
 {
 	static err
 	if !IsObject(err)
-		err := FileOpen(DllCall("GetStdHandle", "UInt", -12, "UPtr"), "h")
-	if (text)
-	{
-		err.Write(ERROR.Messages[code] . "`r")
-		msg ? err.Write(msg . "`r") : ""
-		err.Read(0)
-	}
+		err := FileOpen(DllCall("GetStdHandle", "UInt", -12, "UPtr"), "h `n")
+	msg ? err.WriteLine(msg) : ""
+	err.WriteLine(ERROR.Messages[code])
+	err.Read(0)
 	if (exit)
 		ExitApp code
 }
