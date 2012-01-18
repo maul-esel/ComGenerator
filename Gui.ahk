@@ -164,5 +164,5 @@ Parameters:
 Gui_Error(code, msg)
 {
 	Gui main: Default
-	SB_SetText("`t`t" . ERROR.Messages[code]), SB_SetText("`t`t" . msg, 2)
+	SB_SetText("`t`t" . ERROR.Messages[code], 3), SB_SetText("`t`t" . msg, 2)
 }
