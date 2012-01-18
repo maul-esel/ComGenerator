@@ -3,7 +3,7 @@ File: Main.ahk
 Script: ComGenerator
 
 Purpose:
-automatic creation of classes compatible with the CCF (https://github.com/maul-esel/COM-Classes).
+	automatic creation of classes compatible with the CCF (https://github.com/maul-esel/COM-Classes).
 
 Authors:
 * maul.esel

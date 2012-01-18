@@ -10,6 +10,7 @@ Authors:
 
 Requirements:
 	AutoHotkey - AutoHotkey_L v1.1+
+	Libraries - CCF (https://github.com/maul-esel/COM-Classes)
 
 License:
 	http://unlicense.org
@@ -56,7 +57,23 @@ Gui main: Show, w630
 return
 
 /*
+Label: Gui_SearchIID4Name
+searches the registry for an IID for a given interface name.
+*/
+Gui_SearchIID4Name:
+Gui main: Submit, NoHide
+if (!InterfaceName)
+{
+	Error(ERROR.NAME_MISSING, true), Status()
+	return
+}
+iid := SearchIID4Name(InterfaceName)
+GuiControl main:, InterfaceID, % iid ? iid : ""
+return
+
+/*
 Label: Gui_LoadLibraryInformation
+loads interface name, type library guid and type library version for an IID.
 */
 Gui_LoadLibraryInformation:
 Gui main: Submit, NoHide
@@ -84,21 +101,8 @@ Status()
 return
 
 /*
-Label: Gui_SearchIID4Name
-*/
-Gui_SearchIID4Name:
-Gui main: Submit, NoHide
-if (!InterfaceName)
-{
-	Error(ERROR.NAME_MISSING, true), Status()
-	return
-}
-iid := SearchIID4Name(InterfaceName)
-GuiControl main:, InterfaceID, % iid ? iid : ""
-return
-
-/*
 Label: Gui_LoadTypeLibrary
+loads the type library based on the information extracted in <Gui_LoadLibraryInformation>.
 */
 Gui_LoadTypeLibrary:
 Gui main: Submit, NoHide
@@ -112,6 +116,7 @@ return
 
 /*
 Label: Gui_LoadTypeInfo
+loads type information from the type library created in <Gui_LoadTypeLibrary> and based on the specified IID.
 */
 Gui_LoadTypeInfo:
 Gui main: Submit, NoHide
@@ -125,6 +130,7 @@ return
 
 /*
 Label: Gui_GenerateClass
+generates a CCF class from the type information.
 */
 Gui_GenerateClass:
 throw Exception("Not implemented!", -1)
@@ -132,7 +138,7 @@ return
 
 /*
 Label: mainGuiClose
-Invoked when the main window is closed.
+Invoked when the main window is closed. Closes the app.
 
 Remarks:
 	Any cleanup not directly connected to the UI should instead be placed in an OnExit label.
@@ -143,7 +149,7 @@ return
 
 /*
 Function: Gui_Status
-If the app is in GUI mode, reports the current status to the user
+If the app is in GUI mode, reports the current status to the user.
 
 Parameters:
 	STR text - the text to report

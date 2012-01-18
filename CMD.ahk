@@ -1,4 +1,21 @@
 /*
+File: CMD.ahk
+Script: ComGenerator
+
+Purpose:
+	Holds the commandline-related code.
+
+Authors:
+* maul.esel
+
+Requirements:
+	AutoHotkey - AutoHotkey_L v1.1+
+	Libraries - CCF (https://github.com/maul-esel/COM-Classes)
+
+License:
+	http://unlicense.org
+*/
+/*
 Function: Cmd_Status
 If the app is in CMD mode, reports  reports the current status to the user
 
@@ -9,7 +26,8 @@ Cmd_Status(text)
 {
 	static out
 	if !IsObject(out)
-		out := FileOpen(DllCall("GetStdHandle", "UInt", -11, "UPtr"), "h `n")
+		out := FileOpen(DllCall("GetStdHandle", "UInt", -11, "UPtr"), "h `n") ; create object here because it requires AttachConsole() to be called previously
+
 	out.WriteLine(text)
 	out.Read(0)
 }
@@ -26,10 +44,12 @@ Cmd_Error(code, exit, msg)
 {
 	static err
 	if !IsObject(err)
-		err := FileOpen(DllCall("GetStdHandle", "UInt", -12, "UPtr"), "h `n")
+		err := FileOpen(DllCall("GetStdHandle", "UInt", -12, "UPtr"), "h `n") ; same as in Cmd_Status
+
 	msg ? err.WriteLine(msg) : ""
 	err.WriteLine(ERROR.Messages[code])
 	err.Read(0)
+
 	if (exit)
 		ExitApp code
 }
@@ -47,7 +67,7 @@ Cmd_Arguments()
 	{
 		args := []
 		Loop %0%
-			args.Insert(%A_Index%)
+			args.Insert(%A_Index%) ; dynamic vars resolve to globals
 	}
 	return args
 }
@@ -61,6 +81,7 @@ Parameters:
 */
 Cmd_Run(args)
 {
+	; check if a name was passed:
 	name_index := Cmd_IndexOf(args, "--name")
 	if (name_index)
 	{
@@ -69,6 +90,7 @@ Cmd_Run(args)
 			iid := SearchIID4Name(name)
 	}
 
+	; check if an IID was passed (overrides name):
 	iid_index := Cmd_IndexOf(args, "--iid")
 	if (iid_index)
 	{
@@ -77,6 +99,7 @@ Cmd_Run(args)
 			iid := iid2
 	}
 
+	; check if a CLSID of an implementing class was passed:
 	clsid_index := Cmd_IndexOf(args, "--clsid")
 	if (clsid_index)
 	{
@@ -85,6 +108,7 @@ Cmd_Run(args)
 			return Error(ERROR.INVALID_CMD, true), Status()
 	}
 
+	; ensure an interface was passed via IID or name:
 	if (!iid)
 	{
 		return Error(ERROR.INVALID_CMD, true), Status()
@@ -100,6 +124,10 @@ Cmd_Run(args)
 	Error(ERROR.NOT_IMPLEMENTED, true, "Class generation:")
 }
 
+/*
+Function: Cmd_IndexOf
+a small wrapper function that returns the index of a specified value in an array
+*/
 Cmd_IndexOf(array, value)
 {
 	for index, val in array
