@@ -44,7 +44,7 @@ return
 Function: Status
 Reports the current status to the user
 */
-Status(text = "Ready.")
+Status(text = "Done.")
 {
 	return IsUIMode() ? Gui_Status(text) : Cmd_Status(text)
 }
