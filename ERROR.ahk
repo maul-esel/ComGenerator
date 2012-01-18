@@ -22,6 +22,8 @@ class ERROR
 
 	static NAME_MISSING := 0x09
 
+	static NOT_IMPLEMENTED := 0x0A
+
 	static Messages := { (ERROR.CLEAR) : ""
 						, (ERROR.SUCCESS) : "Success!"
 						, (ERROR.ABORTED) : "Operation aborted by user."
@@ -32,5 +34,6 @@ class ERROR
 						, (ERROR.READ_TYPELIB_VERSION) : "The type library version for the specified IID could not be read."
 						, (ERROR.LOAD_LIBRARY) : "The type library could not be loaded."
 						, (ERROR.LOAD_TYPE) : "The specified type could not be loaded from the type library."
-						, (ERROR.NAME_MISSING) : "No name was specified." }
+						, (ERROR.NAME_MISSING) : "No name was specified."
+						, (ERROR.NOT_IMPLEMENTED) : "This action has not yet been implemented." }
 }
