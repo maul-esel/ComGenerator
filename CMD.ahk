@@ -89,6 +89,15 @@ Cmd_Run(args)
 	{
 		return Error(ERROR.INVALID_CMD, true), Status()
 	}
+
+	lib_guid := GetTypeLib4IID(iid)
+	version := GetTypeLibVersion4IID(iid)
+	StringSplit version, version, .
+
+	lib := LoadTypeLibrary(lib_guid, version1, version2)
+	type := LoadTypeInfo(lib, iid)
+
+	Error(ERROR.NOT_IMPLEMENTED, true, "Class generation:")
 }
 
 Cmd_IndexOf(array, value)
