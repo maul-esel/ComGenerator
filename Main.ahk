@@ -19,6 +19,7 @@ License:
 script header
 */
 #SingleInstance off
+#NoTrayIcon
 #NoEnv
 #KeyHistory 0
 ListLines Off
