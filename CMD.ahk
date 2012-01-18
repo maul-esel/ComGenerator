@@ -79,7 +79,7 @@ Cmd_Run(args)
 
 	if (!iid)
 	{
-		return Error("Invalid command line options!", true), Status()
+		return Error(ERROR.INVALID_CMD, true), Status()
 	}
 }
 
