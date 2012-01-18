@@ -74,44 +74,44 @@ IsUIMode()
 
 GetName4IID(iid)
 {
-	Status("Reading interface name for interface """ . iid . """.")
+	Status("Reading interface name for interface """ . iid . """...")
 	name := Registry_GetName4IID(iid)
 	if (!name)
 	{
-		return "", Status(), Error(ERROR.READ_NAME, false, "IID: " . iid)
+		return "", Error(ERROR.READ_NAME, false, "IID: " . iid), Status()
 	}
 	return name, Status(), Error()
 }
 
 GetTypeLib4IID(iid)
 {
-	Status("Reading type library guid for interface """ . iid . """.")
+	Status("Reading type library guid for interface """ . iid . """...")
 	guid := Registry_GetTypeLib4IID(iid)
 	if (!guid)
 	{
-		return 0, Status(), Error(ERROR.READ_TYPELIB, true, "IID: " . iid)
+		return 0, Error(ERROR.READ_TYPELIB, true, "IID: " . iid), Status()
 	}
 	return guid, Status(), Error()
 }
 
 GetTypeLibVersion4IID(iid)
 {
-	Status("Reading type library version for """ . iid . """.")
+	Status("Reading type library version for """ . iid . """...")
 	version := Registry_GetTypeLibVersion4IID(iid)
 	if (!version)
 	{
-		return "", Status(), Error(ERROR.READ_TYPELIB_VERSION, true, "IID: " . iid)
+		return "", Error(ERROR.READ_TYPELIB_VERSION, true, "IID: " . iid), Status()
 	}
 	return version, Status(), Error()
 }
 
 SearchIID4Name(name)
 {
-	Status("Searching IID for interface """ . name . """.")
+	Status("Searching IID for interface """ . name . """...")
 	iid := Registry_SearchIID4Name(name)
 	if (!iid)
 	{
-		return 0, Status(), Error(ERROR.FIND_INTERFACE, true, "Interface: " . name)
+		return 0, Error(ERROR.FIND_INTERFACE, true, "Interface: " . name), Status()
 	}
 	return iid, Status(), Error()
 }
@@ -125,7 +125,7 @@ LoadTypeLibrary(guid, vMajor, vMinor)
 	}
 	catch exception
 	{
-		return false, Status(), Error(ERROR.LOAD_LIBRARY, true, "Type library: " . guid)
+		return false, Error(ERROR.LOAD_LIBRARY, true, "Type library: " . guid), Status()
 	}
 	return lib, Status(), Error()
 }
@@ -139,7 +139,7 @@ LoadTypeInfo(lib, iid)
 	}
 	catch exception
 	{
-		return false, Status(), Error(ERROR.LOAD_TYPE, true, "IID: " . iid)
+		return false, Error(ERROR.LOAD_TYPE, true, "IID: " . iid), Status()
 	}
 	return type, Status(), Error()
 }
