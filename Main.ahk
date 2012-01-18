@@ -28,15 +28,13 @@ SetWorkingDir %A_ScriptDir%
 /*
 check app mode
 */
-if DllCall("AttachConsole", "UInt", -1) ; process was launched from a cmd app
+if !IsUIMode() ; process was launched from a cmd app
 {
-	IsUIMode(false)
 	Cmd_Run(Cmd_Arguments())
 	ExitApp ERROR.SUCCESS
 }
 else ; UI mode
 {
-	IsUIMode(true)
 	Gosub BuildGui
 }
 return
@@ -66,14 +64,12 @@ Error(code = -1, exit = false, msg = "")
 
 /*
 Function: IsUIMode
-retrieves whether the app is in UI mode or not. The value defaults to "false". If a value of "true" is passed, the value is changed.
+retrieves whether the app is in UI mode or not.
 */
-IsUIMode(val = true)
+IsUIMode()
 {
-	static is_ui := false
-	if val
-		is_ui := true
-	return val
+	static value := !DllCall("AttachConsole", "UInt", -1)
+	return value
 }
 
 GetName4IID(iid)
