@@ -18,7 +18,7 @@ License:
 /*
 script header
 */
-#SingleInstance force
+#SingleInstance off
 #NoEnv
 #KeyHistory 0
 ListLines Off
@@ -32,6 +32,7 @@ if DllCall("AttachConsole", "UInt", -1) ; process was launched from a cmd app
 {
 	IsUIMode(false)
 	Cmd_Run(Cmd_Arguments())
+	ExitApp ERROR.SUCCESS
 }
 else ; UI mode
 {
