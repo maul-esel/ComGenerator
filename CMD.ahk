@@ -7,8 +7,10 @@ Parameters:
 */
 Cmd_Status(text)
 {
-	static out := FileOpen(DllCall("GetStdHandle", "UInt", -11, "UPtr"), "h")
-	out.Write(text)
+	static out
+	if !IsObject(out)
+		out := FileOpen(DllCall("GetStdHandle", "UInt", -11, "UPtr"), "h")
+	out.Write(text . "`r")
 	out.Read(0)
 }
 
@@ -22,11 +24,13 @@ Parameters:
 */
 Cmd_Error(code = 0x00, exit = false, msg = "")
 {
-	static err := FileOpen(DllCall("GetStdHandle", "UInt", -12, "UPtr"), "h")
+	static err
+	if !IsObject(err)
+		err := FileOpen(DllCall("GetStdHandle", "UInt", -12, "UPtr"), "h")
 	if (text)
 	{
-		err.WriteLine(ERROR.Messages[code])
-		msg ? err.WriteLine(msg) : ""
+		err.Write(ERROR.Messages[code] . "`r")
+		msg ? err.Write(msg . "`r") : ""
 		err.Read(0)
 	}
 	if (exit)

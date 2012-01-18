@@ -28,7 +28,7 @@ SetWorkingDir %A_ScriptDir%
 /*
 check app mode
 */
-if 0 > 0 ; CMD mode
+if DllCall("AttachConsole", "UInt", -1) ; process was launched from a cmd app
 {
 	IsUIMode(false)
 	Cmd_Run(Cmd_Arguments())
