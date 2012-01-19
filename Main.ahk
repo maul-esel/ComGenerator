@@ -24,7 +24,6 @@ script header
 #KeyHistory 0
 ListLines Off
 SetBatchLines -1
-SetWorkingDir %A_ScriptDir%
 
 /*
 check app mode
@@ -148,6 +147,7 @@ LoadTypeInfo(lib, iid)
 /*
 #Includes (not executed at loadtime)
 */
+#include %A_ScriptDir%
 #include CCF\Unknown\Unknown.ahk
 #include CCF\TypeInfo\TypeInfo.ahk
 #include CCF\TypeLib\TypeLib.ahk
