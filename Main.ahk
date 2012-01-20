@@ -148,6 +148,8 @@ LoadTypeInfo(lib, iid)
 #Includes (not executed at loadtime)
 */
 #include %A_ScriptDir%
+#include CCF\_CCF_Error_Handler_\_CCF_Error_Handler_.ahk
+
 #include CCF\Unknown\Unknown.ahk
 #include CCF\TypeInfo\TypeInfo.ahk
 #include CCF\TypeLib\TypeLib.ahk
