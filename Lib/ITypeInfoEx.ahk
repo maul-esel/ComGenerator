@@ -72,5 +72,5 @@ ITypeInfoEx_IsDispatch(type)
 	attr := type.GetTypeAttr()
 	if (attr.typekind == TYPEKIND.DISPATCH)
 		return true
-	return attr.wTypeFlags & TYPEFLAG.FDUAL) == TYPEFLAG.FDUAL
+	return (attr.wTypeFlags & TYPEFLAG.FDUAL) == TYPEFLAG.FDUAL
 }
