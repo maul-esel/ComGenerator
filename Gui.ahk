@@ -22,23 +22,29 @@ builds the GUI
 BuildGui:
 Gui main: New,, ComGenerator
 
-Gui main: Add, Groupbox, x5 y0 w930 h95 cGray
+Gui main: Add, Groupbox, x5 y0 w930 h45 cGray Section
 
-Gui main: Add, Text, x10 y10 w300, Interface ID (IID):
+Gui main: Add, Text, x10 ys+15 w300, AutoHotkey version:
+Gui main: Add, Checkbox, vAHK_L x320 yp w300, AutoHotkey_L
+Gui main: Add, Checkbox, vAHK2 x630 yp w300 Checked, AutoHotkey v2
+
+Gui main: Add, Groupbox, x5 yp+25 w930 h100 cGray Section
+
+Gui main: Add, Text, x10 ys+15 w300, Interface ID (IID):
 Gui main: Add, Edit, vInterfaceID xp yp+25 w300
 Gui main: Add, Button, xp yp+30 w300 vLoadInfoButton gGui_LoadLibraryInformation, Load
 
-Gui main: Add, Text, x320 y10 w300, Interface name:
+Gui main: Add, Text, x320 ys+15 w300, Interface name:
 Gui main: Add, Edit, vInterfaceName xp yp+25 w300
 Gui main: Add, Button, xp yp+30 w300 vSearchIIDButton gGui_SearchIID4Name, Search
 
-Gui main: Add, Text, x630 y10 w300, Class ID:
+Gui main: Add, Text, x630 ys+15 w300, Class ID:
 Gui main: Add, Edit, vClassID xp yp+25 w300
 Gui main: Add, Button, xp yp+30 w300 vSetClassButton gGui_SetCLSID, Set
 
-Gui main: Add, Groupbox, x5 yp+25 w930 h75 cGray
+Gui main: Add, Groupbox, x5 yp+25 w930 h75 cGray Section
 
-Gui main: Add, Text, x10 yp+15, Type Library GUID:
+Gui main: Add, Text, x10 ys+15, Type Library GUID:
 Gui main: Add, Edit, vTypeLibGUID Readonly x150 yp w300
 
 Gui main: Add, Text, x460 yp, Type Library Version:
@@ -47,15 +53,15 @@ Gui main: Add, Edit, vTypeLibMinorVer Readonly x785 yp w145
 
 Gui main: Add, Button, x10 yp+30 w920 disabled vLoadLibButton gGui_LoadTypeLibrary, Load library
 
-Gui main: Add, Groupbox, x5 yp+25 w930 h45 cGray
+Gui main: Add, Groupbox, x5 yp+25 w930 h45 cGray Section
 
-Gui main: Add, Text, x10 yp+15, ITypeLib pointer:
+Gui main: Add, Text, x10 ys+15, ITypeLib pointer:
 Gui main: Add, Edit, vTypeLibPtr Readonly x150 yp w300
-Gui main: Add, Button, x460 yp w470 disabled vLoadTypeButton gGui_LoadTypeInfo, Search for type
+Gui main: Add, Button, x460 yp w470 disabled vLoadTypeButton gGui_LoadTypeInfo, Load type
 
-Gui main: Add, Groupbox, x5 yp+25 w930 h45 cGray
+Gui main: Add, Groupbox, x5 yp+25 w930 h45 cGray Section
 
-Gui main: Add, Text, x10 yp+15, ITypeInfo pointer:
+Gui main: Add, Text, x10 ys+15, ITypeInfo pointer:
 Gui main: Add, Edit, vTypeInfoPtr Readonly x150 yp w300
 Gui main: Add, Button, x460 yp w470 disabled vGenerateButton gGui_GenerateClass, Generate class
 
@@ -150,6 +156,17 @@ Label: Gui_GenerateClass
 generates a CCF class from the type information.
 */
 Gui_GenerateClass:
+Gui main: Submit, NoHide
+version := AHKVersion.NONE
+
+if (AHK_L)
+	version |= AHKVersion.AHK_L
+if (AHK2)
+	version |= AHKVersion.AHK2
+
+if (version == AHKVersion.NONE)
+	version := AHKVersion.AHK2
+
 throw Exception("Not implemented!", -1)
 return
 

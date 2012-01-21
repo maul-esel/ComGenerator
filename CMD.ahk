@@ -114,6 +114,16 @@ Cmd_Run(args)
 		return Error(ERROR.INVALID_CMD, true), Status()
 	}
 
+	version := AHKVersion.NONE
+
+	if (Cmd_IndexOf(args, "--ahk_L"))
+		version |= AHKVersion.AHK_L
+	if (Cmd_IndexOf(args, "--ahk2"))
+		version |= AHKVersion.AHK2
+
+	if (version == AHKVersion.NONE)
+		version := AHKVersion.AHK2
+
 	lib_guid := GetTypeLib4IID(iid)
 	version := GetTypeLibVersion4IID(iid)
 	StringSplit version, version, .
