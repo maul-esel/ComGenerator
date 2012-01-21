@@ -24,7 +24,7 @@ Function: ITypeInfoEx_LoadVariables
 loads an array of VARDESC structures for all variables in a given TypeInfo
 
 Parameters:
-	TypeInfo type - the TypeInfo instance containing the functions
+	TypeInfo type - the TypeInfo instance containing the variables
 
 Returns:
 	VARDESC[] funcs - an AHK-array of VARDESC instances
@@ -38,4 +38,22 @@ ITypeInfoEx_LoadVariables(type)
 	Loop % type.GetTypeAttr().cVars
 		arr.Insert(type.GetVarDesc(A_Index - 1))
 	return arr
+}
+
+/*
+Function: ITypeInfoEx_IsDispatch
+checks whether a given TypeInfo describes an IDispatch or dual interface
+
+Parameters:
+	TypeInfo type - the TypeInfo instance to test
+
+Returns:
+	BOOL isdisp - true if the interface is a dispinterface or a dual interface, false otherwise
+*/
+ITypeInfoEx_IsDispatch(type)
+{
+	attr := type.GetTypeAttr()
+	if (attr.typekind == TYPEKIND.DISPATCH)
+		return true
+	return attr.wTypeFlags & TYPEFLAG.FDUAL) == TYPEFLAG.FDUAL
 }
