@@ -165,7 +165,11 @@ if (AHK2)
 	version |= AHKVersion.AHK2
 
 if (version == AHKVersion.NONE)
+{
 	version := AHKVersion.AHK2
+	GuiControl main:, AHK2, 1
+	GuiControl main: Disable, AHK2
+}
 
 throw Exception("Not implemented!", -1)
 return
