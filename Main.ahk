@@ -157,3 +157,4 @@ LoadTypeInfo(lib, iid)
 #include Gui.ahk
 #include Cmd.ahk
 #include ERROR.ahk
+#include AHKVersion.ahk
