@@ -1,3 +1,20 @@
+/*
+File: ERROR.ahk
+Script: ComGenerator
+
+Purpose:
+	Defines errors and error messages that might occur in ComGenerator.
+
+Authors:
+	* maul.esel
+
+Requirements:
+	AutoHotkey - AutoHotkey_L v1.1+
+	Libraries - CCF (https://github.com/maul-esel/COM-Classes)
+
+License:
+	http://unlicense.org
+*/
 class ERROR
 {
 	static CLEAR := -1

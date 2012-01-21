@@ -1,4 +1,21 @@
 /*
+File: Registry.ahk
+Script: ComGenerator
+
+Purpose:
+	holds functions to retrieve information about a registered type.
+
+Authors:
+	* maul.esel
+
+Requirements:
+	AutoHotkey - AutoHotkey_L v1.1+
+	Libraries - CCF (https://github.com/maul-esel/COM-Classes)
+
+License:
+	http://unlicense.org
+*/
+/*
 Function: Registry_GetName4IID
 gets the interface name for the specified IID.
 

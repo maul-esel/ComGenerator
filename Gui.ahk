@@ -6,7 +6,7 @@ Purpose:
 	Holds the UI-related code.
 
 Authors:
-* maul.esel
+	* maul.esel
 
 Requirements:
 	AutoHotkey - AutoHotkey_L v1.1+

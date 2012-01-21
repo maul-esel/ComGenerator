@@ -1,4 +1,21 @@
 /*
+File: ITypeInfoEx.ahk
+Script: ComGenerator
+
+Purpose:
+	holds functions used to extract extended information about TypeInfo instances.
+
+Authors:
+	* maul.esel
+
+Requirements:
+	AutoHotkey - AutoHotkey_L v1.1+
+	Libraries - CCF (https://github.com/maul-esel/COM-Classes)
+
+License:
+	http://unlicense.org
+*/
+/*
 Function: ITypeInfoEx_LoadFunctions
 loads an array of FUNCDESC structures for all functions in a given TypeInfo
 

@@ -6,7 +6,7 @@ Purpose:
 	automatic creation of classes compatible with the CCF (https://github.com/maul-esel/COM-Classes).
 
 Authors:
-* maul.esel
+	* maul.esel
 
 Requirements:
 	AutoHotkey - AutoHotkey_L v1.1+
