@@ -7,6 +7,9 @@ In the last weeks, I looked into some COM interfaces providing type information,
 ## Purpose
 Well, this is the script mentioned above. It is written in AHK **(requires latest AHK_L)** and uses the CCF classes (brought in as submodule) and allows class creation via CMD and GUI. Or rather, it should. Right now, some basic functionalities are implemented, the main part is still missing.
 
+## Requirements:
+As mentioned before ComGenerator requires the latest AHK_L. To get it running, you should also fetch the submodule (the CCF): `git submodule update --init`.
+
 ## Contribute
 Any AHK developers are **welcome to fork this and to contribute**. Of course, the same applies to CCF: ITypeInfo, ITypeInfo2, ITypeLib2 and other interfaces are missing or incomplete.
 
