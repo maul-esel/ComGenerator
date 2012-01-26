@@ -1,4 +1,4 @@
-/*
+﻿/*
 File: Main.ahk
 Script: ComGenerator
 
@@ -147,23 +147,10 @@ LoadTypeInfo(lib, iid)
 /*
 #Includes (not executed at loadtime)
 */
+#include %A_ScriptDir%\CCF
+#include Type Information Header.ahk
+
 #include %A_ScriptDir%
-#include CCF\_CCF_Error_Handler_\_CCF_Error_Handler_.ahk
-
-#include CCF\Helper Classes\StructBase.ahk
-#include CCF\Helper Classes\TYPEATTR.ahk
-
-#include CCF\Helper Classes\DISPID.ahk
-#include CCF\Helper Classes\MEMBERID.ahk
-#include CCF\Helper Classes\TYPEKIND.ahk
-#include CCF\Helper Classes\VARKIND.ahk
-#include CCF\Helper Classes\TYPEFLAG.ahk
-#include CCF\Helper Classes\VARENUM.ahk
-
-#include CCF\Unknown\Unknown.ahk
-#include CCF\TypeInfo\TypeInfo.ahk
-#include CCF\TypeLib\TypeLib.ahk
-
 #include Gui.ahk
 #include Cmd.ahk
 #include ERROR.ahk
