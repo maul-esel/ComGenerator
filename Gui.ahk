@@ -170,8 +170,9 @@ if (version == AHKVersion.NONE)
 	GuiControl main:, AHK2, 1
 	GuiControl main: Disable, AHK2
 }
-
-throw Exception("Not implemented!", -1)
+generator := new CCFGenerator(type, version)
+generator.Generate()
+;throw Exception("Not implemented!", -1)
 return
 
 /*
