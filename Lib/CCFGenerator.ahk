@@ -35,7 +35,7 @@ class CCFGenerator
 		this.typeAttr := type.GetTypeAttr(), this.typeInfo.AddRef()
 
 		pTypeInfo2 := type.QueryInterface(TypeInfo2.IID)
-		if (pTypeInfo2 != 0)
+		if (pTypeInfo2)
 			this.typeInfo2 := new TypeInfo2(pTypeInfo2)
 	}
 
@@ -75,21 +75,17 @@ class CCFGenerator
 			if (!this.typeInfo2 || !this.typeInfo2.GetDocumentation2(MEMBERID.NIL, 0, interface_doc))
 				throw Exception("Error calling TypeInfo.GetDocumentation()", -1, this.typeInfo.error.description)
 
-		; wrapping base types:
-		Loop % this.typeAttr.cImplTypes + 1
-		{
-			; TODO: if already wrapped
-			;	continue
-			hreftype := this.typeInfo.GetRefTypeOfImplType(A_Index)
-			info := this.typeInfo.GetRefTypeInfo(hreftype)
-			basetype := new CCFGenerator(info, this.version)
+		; TODO: if not already wrapped {
+		baseRef := this.typeInfo.GetRefTypeOfImplType(0)
+		, baseInfo := this.typeInfo.GetRefTypeInfo(hreftype)
+		, baseGenerator := new CCFGenerator(info, this.version)
 
-			try {
-				result := basetype.Generate()
-			} catch ex {
-				;throw Exception("CCFGenerator.GenerateInterfaceClass(): A base type could not be generated.", -1, ex.extra)
-			}
+		try {
+			result := baseGenerator.Generate()
+		} catch exception {
+			;throw Exception("CCFGenerator.GenerateInterfaceClass(): The base type could not be generated.", -1, ex.extra)
 		}
+		; }
 
 		Loop % this.typeAttr.cFuncs
 		{
@@ -108,7 +104,6 @@ class CCFGenerator
 				; todo: create pseudo-property
 			}
 
-			MsgBox % func.GetOriginalPointer()
 			this.typeInfo.ReleaseFuncDesc(func)
 		}
 	}
@@ -124,6 +119,7 @@ class CCFGenerator
 			throw Exception("Error calling TypeInfo.GetDocumentation()", -1, this.typeInfo.error.description)
 		for each, var in ITypeInfoEx_LoadVariables(this.typeInfo)
 		{
+			MsgBox % var.varkind " - " Obj_FindValue(VARKIND, var.varkind) " - " var.lpstrSchema
 			if (var.varkind != VARKIND.CONST)
 				throw Exception("CCFGenerator.GenerateEnumClass(): only constant variables can be wrapped!", -1)
 
@@ -143,6 +139,73 @@ class CCFGenerator
 			}
 			NumPut(NumGet(1*var.lpvarValue, 00, "UInt64"), value, 00, "UInt64")
 		}
+	}
+
+	IsIDispatch()
+	{
+		return CCFramework.HasEnumFlag(this.typeAttr.wTypeFlags, TYPEFLAG.FDISPATCHABLE)
+	}
+
+	GetNameForHREFTYPE(href)
+	{
+		info := this.typeInfo.GetRefTypeInfo(href)
+		info.GetDocumentation(-1, name)
+		return name
+	}
+
+	ResolveType(tdesc)
+	{
+		if (tdesc.vt == VARENUM.PTR)
+			return this.ResolveType(tdesc.lptdesc) "*"
+		else if (tdesc.vt == VARENUM.SAFEARRAY)
+			return "ComObjArray[" this.ResolveType(tdesc.lptdesc) "]"
+		else if (tdesc.vt == VARENUM.CARRAY)
+		{
+			; todo
+		}
+		else if (tdesc.vt == VARENUM.USERDEFINED)
+		{
+			return this.GetNameForHREFTYPE(tdesc.hreftype)
+		}
+
+		; "normal" types
+		if (tdesc.vt == VARENUM.I1)
+			return "Char"
+		else if (tdesc.vt == VARENUM.UI1)
+			return "UChar"
+		else if (tdesc.vt == VARENUM.I2)
+			return "Short"
+		else if (tdesc.vt == VARENUM.UI2)
+			return "UShort"
+		else if (tdesc.vt == VARENUM.I4 || tdesc.vt == VARENUM.BOOL || tdesc.vt == VARENUM.INT || tdesc.vt == VARENUM.HRESULT)
+			return "Int"
+		else if (tdesc.vt == VARENUM.UI4 || tdesc.vt == VARENUM.UINT)
+			return "UInt"
+		else if (tdesc.vt == VARENUM.I8 || tdesc.vt == VARENUM.UI8)
+			return "Int64"
+		else if (tdesc.vt == VARENUM.R4)
+			return "Float"
+		else if (tdesc.vt == VRENUM.R8)
+			return "Double"
+		else if (tdesc.vt == VARENUM.CY)
+			throw Exception("Type 'CY' could not be mapped.", -1, "Not implemented")
+		else if (tdesc.vt == VARENUM.DATE)
+			throw Exception("Type 'DATE' could not be mapped.", -1, "Not implemented")
+		else if (tdesc.vt == VARENUM.BSTR || tdesc.vt == VARENUM.LPSTR)
+			return "Str"
+		else if (tdesc.vt == VARENUM.LPWSTR)
+			return this.isAHK_L() ? "WStr" : "Str"
+		else if (tdesc.vt == VARENUM.DISPATCH || tdesc.vt == VARENUM.UNKNOWN)
+			return "Ptr"
+		else if (tdesc.vt == VARENUM.ERROR)
+			throw Exception("Type 'ERROR' could not be mapped.", -1, "Not implemented")
+		else if (tdesc.vt == VARENUM.VARIANT)
+			throw Exception("Type 'VARIANT' could not be mapped.", -1, "Not implemented")
+		else if (tdesc.vt == VARENUM.DECIMAL)
+			throw Exception("Type 'DECIMAL' could not be mapped.", -1, "Not implemented")
+		else if (tdesc.vt == VARENUM.VOID)
+			return ""
+		throw Exception("Could not resolve type", -1, "VT value: " tdesc.vt (name := Obj_FindValue(VARENUM, vt) ? " - " name : ""))
 	}
 }
 
