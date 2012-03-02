@@ -1,4 +1,5 @@
-﻿/*
+﻿; <AutoHotkey L> is required to run this script.
+/*
 File: Main.ahk
 Script: ComGenerator
 
@@ -155,3 +156,4 @@ LoadTypeInfo(lib, iid)
 #include Cmd.ahk
 #include ERROR.ahk
 #include AHKVersion.ahk
+#include CCFGenerator.ahk
