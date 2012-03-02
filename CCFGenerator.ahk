@@ -48,12 +48,12 @@ class CCFGenerator
 
 	isAHK_L()
 	{
-		return Enum_HasFlag(this.version, AHKVersion.AHK_L)
+		return CCFramework.HasEnumFlag(this.version, AHKVersion.AHK_L)
 	}
 
 	isAHK2()
 	{
-		return Enum_HasFlag(this.version, AHKVersion.AHK2)
+		return CCFramework.HasEnumFlag(this.version, AHKVersion.AHK2)
 	}
 
 	Generate()

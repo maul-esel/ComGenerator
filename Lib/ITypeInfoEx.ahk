@@ -70,5 +70,5 @@ Returns:
 ITypeInfoEx_IsDispatch(type)
 {
 	attr := type.GetTypeAttr()
-	return attr.typekind == TYPEKIND.DISPATCH || Enum_HasFlag(attr.wTypeFlags, TYPEFLAG.FDUAL)
+	return attr.typekind == TYPEKIND.DISPATCH || CCFramework.HasEnumFlag(attr.wTypeFlags, TYPEFLAG.FDUAL)
 }
