@@ -154,7 +154,7 @@ LoadTypeInfo(lib, iid)
 #include %A_ScriptDir%
 #include Gui.ahk
 #include Cmd.ahk
-#include AHKVersion.ahk
 #include CCFGenerator.ahk
 #include <Error>
 #Include <ErrorHandler>
+#include <AHKVersion.ahk>
