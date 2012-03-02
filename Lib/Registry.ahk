@@ -32,7 +32,7 @@ Registry_GetName4IID(iid)
 }
 
 /*
-Function: Registry_GetTypeLib4IID
+Function: Registry_GetTypeLibID4IID
 gets the type library GUID for the specified interface.
 
 Parameters:
@@ -41,7 +41,7 @@ Parameters:
 Returns:
 	STR guid - the GUID of the type library, if found.
 */
-Registry_GetTypeLib4IID(iid)
+Registry_GetTypeLibID4IID(iid)
 {
 	RegRead, lib, HKCR, Interface\%iid%\TypeLib
 	return lib

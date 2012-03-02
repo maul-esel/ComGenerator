@@ -102,7 +102,7 @@ Gui_LoadLibraryInformation:
 Gui main: Submit, NoHide
 
 GuiControl main:, InterfaceName, % name := GetName4IID(InterfaceID)
-GuiControl main:, TypeLibGUID, % libid := GetTypeLib4IID(InterfaceID)
+GuiControl main:, TypeLibGUID, % libid := GetTypeLibID4IID(InterfaceID)
 
 version := GetTypeLibVersion4IID(InterfaceID)
 StringSplit, version, version,.

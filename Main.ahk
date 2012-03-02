@@ -84,10 +84,10 @@ GetName4IID(iid)
 	return name, Status(), Error()
 }
 
-GetTypeLib4IID(iid)
+GetTypeLibID4IID(iid)
 {
 	Status("Reading type library guid for interface """ . iid . """...")
-	guid := Registry_GetTypeLib4IID(iid)
+	guid := Registry_GetTypeLibID4IID(iid)
 	if (!guid)
 	{
 		return 0, Error(ERROR.READ_TYPELIB, true, "IID: " . iid), Status()

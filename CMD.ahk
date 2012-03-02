@@ -124,7 +124,7 @@ Cmd_Run(args)
 	if (version == AHKVersion.NONE)
 		version := AHKVersion.AHK2
 
-	lib_guid := GetTypeLib4IID(iid)
+	lib_guid := GetTypeLibID4IID(iid)
 	version := GetTypeLibVersion4IID(iid)
 	StringSplit version, version, .
 
