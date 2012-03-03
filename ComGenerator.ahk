@@ -158,3 +158,4 @@ LoadTypeInfo(lib, iid)
 #include <Error>
 #Include <ErrorHandler>
 #include <AHKVersion>
+#include <PseudoProperty>
