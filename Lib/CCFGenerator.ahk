@@ -17,9 +17,9 @@ License:
 */
 class CCFGenerator
 {
-	AHK2Methods := []
+	Methods := []
 
-	AHKLMethods := []
+	PseudoProperties := []
 
 	version := AHKVersion.NONE
 
@@ -31,8 +31,14 @@ class CCFGenerator
 
 	__New(type, version)
 	{
+		if (version == AHKVersion.NONE)
+			throw Exception("An AutoHotkey version must be specified.", -1)
+
 		this.typeInfo := type, this.version := version
-		this.typeAttr := type.GetTypeAttr(), this.typeInfo.AddRef()
+		, this.typeAttr := type.GetTypeAttr(), this.typeInfo.AddRef()
+
+		if (this.IsIDispatch() && this.typeAttr.guid != Dispatch.IID)
+			throw Exception("Dispatch interfaces must not be wrapped.", -1)
 
 		pTypeInfo2 := type.QueryInterface(TypeInfo2.IID)
 		if (pTypeInfo2)
@@ -48,12 +54,12 @@ class CCFGenerator
 
 	isAHK_L()
 	{
-		return CCFramework.HasEnumFlag(this.version, AHKVersion.AHK_L)
+		return this.version == AHKVersion.AHK_L
 	}
 
 	isAHK2()
 	{
-		return CCFramework.HasEnumFlag(this.version, AHKVersion.AHK2)
+		return this.version == AHKVersion.AHK2
 	}
 
 	Generate()
@@ -72,40 +78,93 @@ class CCFGenerator
 	GenerateInterfaceClass()
 	{
 		if (!this.typeInfo.GetDocumentation(MEMBERID.NIL, interface_name, interface_doc))
-			if (!this.typeInfo2 || !this.typeInfo2.GetDocumentation2(MEMBERID.NIL, 0, interface_doc))
-				throw Exception("Error calling TypeInfo.GetDocumentation()", -1, this.typeInfo.error.description)
+			throw Exception("Error calling TypeInfo.GetDocumentation()", -1, this.typeInfo.error.description)
 
 		; TODO: if not already wrapped {
 		baseRef := this.typeInfo.GetRefTypeOfImplType(0)
-		, baseInfo := this.typeInfo.GetRefTypeInfo(hreftype)
-		, baseGenerator := new CCFGenerator(info, this.version)
+		, baseInfo := this.typeInfo.GetRefTypeInfo(baseRef)
+		, baseGenerator := new CCFGenerator(baseInfo, this.version)
 
 		try {
-			result := baseGenerator.Generate()
+			;result := baseGenerator.Generate()
 		} catch exception {
 			;throw Exception("CCFGenerator.GenerateInterfaceClass(): The base type could not be generated.", -1, ex.extra)
 		}
 		; }
 
+		list := ""
 		Loop % this.typeAttr.cFuncs
 		{
-			func := this.typeInfo.GetFuncDesc(A_Index - 1)
-			id := func.memid
-			this.typeInfo.GetDocumentation(id, name, doc)
+			;MsgBox enter iteration
+			func%A_Index% := this.typeInfo.GetFuncDesc(A_Index - 1) ; crashes here in 2nd iteration - why???
+			;MsgBox will now generate...
+			list .= this.GenerateMethod(func%A_Index%)
+			this.typeInfo.ReleaseFuncDesc(func%A_Index%)
+			;MsgBox leave iteration
+		}
 
-			if (func.funckind != FUNCKIND.PUREVIRTUAL)
-				throw Exception("Can only wrap pure virtual methods!", -1, "Method """ name """ is of kind """ Obj_FindValue(FUNCKIND, func.funckind) """.")
+		MsgBox interface %interface_name% {`n%list%}
+	}
 
-			vtbl_index := func.oVft // A_PtrSize
-			; todo: wrap method
+	GenerateMethod(func)
+	{
+		local list
+		this.typeInfo.GetDocumentation(func.memid, function_name, function_doc)
+		list := "`t" this.ResolveType(func.elemdescFunc.tdesc) " " function_name "( "
 
-			if (func.invkind != INVOKEKIND.METHOD)
+		if (func.funckind != FUNCKIND.PUREVIRTUAL)
+			throw Exception("Can only wrap pure virtual methods!", -1, """" interface_name "::" function_name "()"" is of kind """ Obj_FindValue(FUNCKIND, func.funckind) """.")
+
+		vtbl_index := func.oVft // A_PtrSize
+
+		if (this.isAHK2())
+		{
+			this.Methods.Insert(function_name "()`n{`n`t`n}`n")
+		}
+		else if (this.isAHK_L())
+		{
+			this.Methods.Insert(function_name "()`n{`n`t`n}`n")
+		}
+
+		this.typeInfo.GetNames(func.memid, names)
+		Loop % func.cParams
+		{
+			try {
+				list .= this.ResolveType(func.lprgelemdescParam[A_Index].tdesc) A_Space
+			} catch {
+			}
+			list .= names[A_Index + 1]
+			if (A_Index < func.cParams)
+				list .= ", "
+		}
+		list .= " ) [" Obj_FindValue(INVOKEKIND, func.invkind) "] at vtable-index " vtbl_index "`n"
+
+		/*
+		if (func.invkind != INVOKEKIND.METHOD)
+		{
+			property_name := "" ; todo
+			property := this.FindPseudoProperty(property_name)
+			if (!IsObject(property))
 			{
-				; todo: create pseudo-property
+				property := new AHK.PseudoProperty(property_name)
+				this.PseudoProperties.Insert(property)
 			}
 
-			this.typeInfo.ReleaseFuncDesc(func)
+			if (func.invkind == INVOKEKIND.PROPERTYGET)
+				property.getMethod := function_name
+			else if (func.invkind == INVOKEKIND.PROPERTYPUT || func.invkind == INVOKEKIND.PROPERTYPUTREF)
+				property.setMethod := function_name
 		}
+		*/
+		return list
+	}
+
+	FindPseudoProperty(name)
+	{
+		for each, property in this.PseudoProperties
+			if (property.Name == name)
+				return property
+		return ""
 	}
 
 	GenerateStructClass()
@@ -155,8 +214,12 @@ class CCFGenerator
 
 	ResolveType(tdesc)
 	{
+		;MsgBox % "vt == " tdesc.vt
 		if (tdesc.vt == VARENUM.PTR)
+		{
+		;	MsgBox type is pointer
 			return this.ResolveType(tdesc.lptdesc) "*"
+		}
 		else if (tdesc.vt == VARENUM.SAFEARRAY)
 			return "ComObjArray[" this.ResolveType(tdesc.lptdesc) "]"
 		else if (tdesc.vt == VARENUM.CARRAY)
@@ -165,47 +228,52 @@ class CCFGenerator
 		}
 		else if (tdesc.vt == VARENUM.USERDEFINED)
 		{
+		;	MsgBox % "type is userdefined: " tdesc.hreftype
 			return this.GetNameForHREFTYPE(tdesc.hreftype)
+		}
+		;MsgBox type is normal
+
+		vt := tdesc.vt, suffix := ""
+		if CCFramework.HasEnumFlag(vt, VARENUM.BYREF)
+		{
+			suffix := "*", vt ^= VARENUM.BYREF
+			MsgBox type is byref
 		}
 
 		; "normal" types
-		if (tdesc.vt == VARENUM.I1)
+		if (vt == VARENUM.I1)
 			return "Char"
-		else if (tdesc.vt == VARENUM.UI1)
+		else if (vt == VARENUM.UI1)
 			return "UChar"
-		else if (tdesc.vt == VARENUM.I2)
+		else if (vt == VARENUM.I2)
 			return "Short"
-		else if (tdesc.vt == VARENUM.UI2)
+		else if (vt == VARENUM.UI2)
 			return "UShort"
-		else if (tdesc.vt == VARENUM.I4 || tdesc.vt == VARENUM.BOOL || tdesc.vt == VARENUM.INT || tdesc.vt == VARENUM.HRESULT)
+		else if (vt == VARENUM.I4 || vt == VARENUM.BOOL || vt == VARENUM.INT || vt == VARENUM.HRESULT || vt == VARENUM.ERROR)
 			return "Int"
-		else if (tdesc.vt == VARENUM.UI4 || tdesc.vt == VARENUM.UINT)
+		else if (vt == VARENUM.UI4 || vt == VARENUM.UINT)
 			return "UInt"
-		else if (tdesc.vt == VARENUM.I8 || tdesc.vt == VARENUM.UI8)
+		else if (vt == VARENUM.I8 || vt == VARENUM.UI8 || vt == VARENUM.CY)
 			return "Int64"
-		else if (tdesc.vt == VARENUM.R4)
+		else if (vt == VARENUM.R4)
 			return "Float"
-		else if (tdesc.vt == VRENUM.R8)
+		else if (vt == VARENUM.R8)
 			return "Double"
-		else if (tdesc.vt == VARENUM.CY)
-			throw Exception("Type 'CY' could not be mapped.", -1, "Not implemented")
-		else if (tdesc.vt == VARENUM.DATE)
+		else if (vt == VARENUM.DATE)
 			throw Exception("Type 'DATE' could not be mapped.", -1, "Not implemented")
-		else if (tdesc.vt == VARENUM.BSTR || tdesc.vt == VARENUM.LPSTR)
+		else if (vt == VARENUM.BSTR || vt == VARENUM.LPSTR)
 			return "Str"
-		else if (tdesc.vt == VARENUM.LPWSTR)
+		else if (vt == VARENUM.LPWSTR)
 			return this.isAHK_L() ? "WStr" : "Str"
-		else if (tdesc.vt == VARENUM.DISPATCH || tdesc.vt == VARENUM.UNKNOWN)
+		else if (vt == VARENUM.DISPATCH || vt == VARENUM.UNKNOWN)
 			return "Ptr"
-		else if (tdesc.vt == VARENUM.ERROR)
-			throw Exception("Type 'ERROR' could not be mapped.", -1, "Not implemented")
-		else if (tdesc.vt == VARENUM.VARIANT)
+		else if (vt == VARENUM.VARIANT)
 			throw Exception("Type 'VARIANT' could not be mapped.", -1, "Not implemented")
-		else if (tdesc.vt == VARENUM.DECIMAL)
+		else if (vt == VARENUM.DECIMAL)
 			throw Exception("Type 'DECIMAL' could not be mapped.", -1, "Not implemented")
-		else if (tdesc.vt == VARENUM.VOID)
+		else if (vt == VARENUM.VOID)
 			return ""
-		throw Exception("Could not resolve type", -1, "VT value: " tdesc.vt (name := Obj_FindValue(VARENUM, vt) ? " - " name : ""))
+		throw Exception("Could not resolve type", -1, "VT value: " vt (name := Obj_FindValue(VARENUM, vt) ? " - " name : ""))
 	}
 }
 
