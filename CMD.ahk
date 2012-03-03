@@ -105,13 +105,13 @@ Cmd_Run(args)
 	{
 		clsid := args[clsid_index + 1]
 		if (!clsid)
-			return Error(ERROR.INVALID_CMD, true), Status()
+			return Error(ERROR.INVALID_CMD, true, "The '--clsid' option was passed without a valid value."), Status()
 	}
 
 	; ensure an interface was passed via IID or name:
 	if (!iid)
 	{
-		return Error(ERROR.INVALID_CMD, true), Status()
+		return Error(ERROR.INVALID_CMD, true, "Neither an interface name nor an IID has been passed."), Status()
 	}
 
 	version := AHKVersion.NONE
@@ -131,7 +131,7 @@ Cmd_Run(args)
 	lib := LoadTypeLibrary(lib_guid, version1, version2)
 	type := LoadTypeInfo(lib, iid)
 
-	Error(ERROR.NOT_IMPLEMENTED, true, "Class generation:")
+	Error(ERROR.NOT_IMPLEMENTED, true, "Class generation")
 }
 
 /*
