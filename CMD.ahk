@@ -46,8 +46,8 @@ Cmd_Error(code, exit, msg)
 	if !IsObject(err)
 		err := FileOpen(DllCall("GetStdHandle", "UInt", -12, "UPtr"), "h `n") ; same as in Cmd_Status
 
+	err.WriteLine(ErrorHandler.Messages[code])
 	msg ? err.WriteLine(msg) : ""
-	err.WriteLine(ERROR.Messages[code])
 	err.Read(0)
 
 	if (exit)
