@@ -114,6 +114,23 @@ Cmd_Run(args)
 		return Error(ERROR.INVALID_CMD, true, "Neither an interface name nor an IID has been passed."), Status()
 	}
 
+	lib_index := Cmd_IndexOf(args, "--libid")
+	if (lib_index)
+	{
+		libid := args[lib_index + 1]
+		libver := args[lib_index + 2]
+		if (!libid || !libver)
+			return Error(ERROR.INVALID_CMD, true, "The '--libid' option was passed without a valid value."), Status()
+	}
+
+	lib_file_index := Cmd_IndexOf(args, "--libfile")
+	if (lib_file_index)
+	{
+		libfile := args[lib_file_index + 1]
+		if (!libfile)
+			return Error(ERROR.INVALID_CMD, true, "The '--libfile' option was passed without a valid value."), Status()
+	}
+
 	version := AHKVersion.NONE
 
 	if (Cmd_IndexOf(args, "--ahk_L"))
@@ -124,14 +141,28 @@ Cmd_Run(args)
 	if (version == AHKVersion.NONE)
 		version := AHKVersion.AHK2
 
-	lib_guid := GetTypeLibID4IID(iid)
-	version := GetTypeLibVersion4IID(iid)
-	StringSplit version, version, .
+	if (libfile)
+	{
+		if (!FileExist(libfile))
+			libfile := A_WinDir "\System32\" libfile
+		Status("Loading type library from file '" libfile "'...")
+		lib := TypeLib.FromFile(libfile)
+		Status(), Error()
+	}
+	else
+	{
+		if (!libid)
+		{
+			libid := GetTypeLibID4IID(iid)
+			libver := GetTypeLibVersion4IID(iid)
+		}
+		StringSplit libver, libver, .
+		lib := LoadTypeLibrary(libid, libid1, libid2)
+	}
 
-	lib := LoadTypeLibrary(lib_guid, version1, version2)
 	type := LoadTypeInfo(lib, iid)
 
-	Error(ERROR.NOT_IMPLEMENTED, true, "Class generation")
+	Error(ERROR.NOT_IMPLEMENTED, true, "Action: class generation")
 }
 
 /*
