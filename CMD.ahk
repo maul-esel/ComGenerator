@@ -162,7 +162,10 @@ Cmd_Run(args)
 
 	type := LoadTypeInfo(lib, iid)
 
-	Error(ERROR.NOT_IMPLEMENTED, true, "Action: class generation")
+	generator := new CCFGenerator(type, AHKVersion.AHKv2)
+	generator.Generate()
+
+	;Error(ERROR.NOT_IMPLEMENTED, true, "Action: class generation")
 }
 
 /*
